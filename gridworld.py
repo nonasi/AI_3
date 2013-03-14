@@ -442,6 +442,7 @@ if __name__ == '__main__':
   import gridworld
   mdpFunction = getattr(gridworld, "get"+opts.grid)
   mdp = mdpFunction()
+  
   mdp.setLivingReward(opts.livingReward)
   mdp.setNoise(opts.noise)
   env = gridworld.GridworldEnvironment(mdp)
@@ -480,6 +481,7 @@ if __name__ == '__main__':
     # # No reason to use the random agent without episodes
     if opts.episodes == 0:
       opts.episodes = 10
+      
     class RandomAgent:
       def getAction(self, state):
         return random.choice(mdp.getPossibleActions(state))
