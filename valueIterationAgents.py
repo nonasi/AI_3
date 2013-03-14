@@ -104,8 +104,13 @@ class ValueIterationAgent(ValueEstimationAgent):
       to derive it on the fly.
     """
     "*** YOUR CODE HERE ***"
-    print "Qvalue gets called"
-    util.raiseNotDefined()
+    qvalue = 0
+    for (next_state, probability) in self.mdp.getTransitionStatesAndProbs(state, action):
+        qvalue += probability * (self.mdp.getReward(state, action, next_state) + 
+                                 self.discount * self.getValue(next_state))
+    
+    return qvalue
+    #util.raiseNotDefined()
 
   def getPolicy(self, state):
     """
