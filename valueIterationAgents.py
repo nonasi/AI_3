@@ -43,13 +43,12 @@ class ValueIterationAgent(ValueEstimationAgent):
     iteration = 0
     while iteration < iterations:
         
-        for s in allStates:
-           print "this is current state: ", s 
-           if mdp.isTerminal(s):
-               vPrimes[s] = mdp.getReward(s, None, s);
-           else: 
-               sreward = mdp.getReward(s, None, s)
-               vPrimes[s] = sreward + discount * self.utilOfBestAction(mdp, s )
+        for s in allStates: 
+            if mdp.isTerminal(s):
+                vPrimes[s] = mdp.getReward(s, None, s);
+            else: 
+                sreward = mdp.getReward(s, None, s)
+                vPrimes[s] = sreward + discount * self.utilOfBestAction(mdp, s )
                
         for s in allStates:
             self.values[s] = vPrimes[s]
@@ -73,7 +72,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         
         utilityOfAction = self.getPUsumForGivenAction (mdp, transitionStatesAndProbs, s, action)
         if utilityOfAction >= maxUtility:
-           maxUtility = utilityOfAction 
+            maxUtility = utilityOfAction 
   
     return maxUtility
   
@@ -119,12 +118,15 @@ class ValueIterationAgent(ValueEstimationAgent):
     "*** YOUR CODE HERE ***"
     #this method looks at all the neighboring states, 
     #then returns the action that attempts to goto the state with the highest utility
-    print "getPolicy"
-    if self.mdp.isTerminal(state):
-        return None
-
-    
+    print "getPolicy"    
     legalActions=self.mdp.getPossibleActions(state)
+    
+    if len(legalActions)<1:
+        print "-getPolicy No legal actions"
+        return None
+    #if self.mdp.isTerminal(state):
+    #    "-getPolicy"
+    #    return None
     
     maxValue=0
     bestAction = None
