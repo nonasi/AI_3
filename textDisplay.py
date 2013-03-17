@@ -17,7 +17,7 @@ class NullGraphics:
   def initialize(self, state, isBlue = False):
     pass
   
-  def update(self, state):
+  def update(self, prevState):
     pass
   
   def pause(self):
@@ -41,19 +41,19 @@ class PacmanGraphics:
     self.turn = 0
     self.agentCounter = 0
     
-  def update(self, state):
-    numAgents = len(state.agentStates)
+  def update(self, prevState):
+    numAgents = len(prevState.agentStates)
     self.agentCounter = (self.agentCounter + 1) % numAgents
     if self.agentCounter == 0:
       self.turn += 1
       if DISPLAY_MOVES:
-        ghosts = [pacman.nearestPoint(state.getGhostPosition(i)) for i in range(1, numAgents)]
-        print "%4d) P: %-8s" % (self.turn, str(pacman.nearestPoint(state.getPacmanPosition()))),'| Score: %-5d' % state.score,'| Ghosts:', ghosts
+        ghosts = [pacman.nearestPoint(prevState.getGhostPosition(i)) for i in range(1, numAgents)]
+        print "%4d) P: %-8s" % (self.turn, str(pacman.nearestPoint(prevState.getPacmanPosition()))),'| Score: %-5d' % prevState.score,'| Ghosts:', ghosts
       if self.turn % DRAW_EVERY == 0:
-        self.draw(state)
+        self.draw(prevState)
         self.pause()
-    if state._win or state._lose:
-      self.draw(state)
+    if prevState._win or prevState._lose:
+      self.draw(prevState)
     
   def pause(self):
     time.sleep(SLEEP_TIME)

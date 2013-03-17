@@ -124,7 +124,7 @@ class ValueIterationAgent(ValueEstimationAgent):
     #this method looks at all the neighboring states, 
     #then returns the action that attempts to goto the state with the highest utility
     print "getPolicy ", state    
-    legalActions=self.mdp.getPossibleActions(state)
+    legalActions = self.mdp.getPossibleActions(state)
     
     if len(legalActions)<1:
         print "-getPolicy No legal actions"

@@ -492,7 +492,7 @@ if __name__ == '__main__':
       def getPolicy(self, state):
         "NOTE: 'random' is a special policy value; don't use it in your code."
         return 'random'
-      def update(self, state, action, nextState, reward):
+      def update(self, prevState, prevAction, nextState, rPrime):
         pass      
     a = RandomAgent()
   else:

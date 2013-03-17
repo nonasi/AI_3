@@ -96,10 +96,10 @@ class ReinforcementAgent(ValueEstimationAgent):
   #    Override These Functions      #  
   ####################################
   
-  def update(self, state, action, nextState, reward):
+  def update(self, prevState, prevAction, nextState, rPrime):
     """
 	    This class will call this function, which you write, after
-	    observing a transition and reward
+	    observing a transition and rPrime
     """
     util.raiseNotDefined()
         

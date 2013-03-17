@@ -25,12 +25,12 @@ class QLearningAgent(ReinforcementAgent):
       
     Instance variables you have access to
       - self.epsilon (exploration prob)
-      - self.alpha (learning rate)
-      - self.gamma (discount rate)
+      - self.alpha   (learning rate)
+      - self.gamma   (discount rate)
     
     Functions you should use
       - self.getLegalActions(state) 
-        which returns legal actions
+        returns legal actions
         for a state
   """
   def __init__(self, **args):
@@ -38,6 +38,14 @@ class QLearningAgent(ReinforcementAgent):
     ReinforcementAgent.__init__(self, **args)
 
     "*** YOUR CODE HERE ***"
+    self.qValues = util.Counter() #q values are initialized here.
+    #self.seenqv = util.Counter() #seenqv[sa] = 1 iff qValues[sa] seen, 0 otherwise
+    self.freq=util.Counter()
+    self.totalCount = 0.0 
+    self.re = 0.0
+    self.ac = None
+        
+    
   
   def getQValue(self, state, action):
     """
@@ -46,7 +54,8 @@ class QLearningAgent(ReinforcementAgent):
       a state or (state,action) tuple 
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    sa = (state, action)
+    return self.qValues[sa]
   
     
   def getValue(self, state):
@@ -55,9 +64,25 @@ class QLearningAgent(ReinforcementAgent):
       where the max is over legal actions.  Note that if
       there are no legal actions, which is the case at the
       terminal state, you should return a value of 0.0.
+      My Notes: we should return the VALUE of the action which 
+      has the greatest Q-value
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    legalActions = self.getLegalActions(state)
+    if len(legalActions)<1:
+        return 0.0
+    
+    else: 
+        maxAction = -sys.maxint -1 #"-infinity"
+        #get the greatest qValue among the possible state-action pairs
+        for curAction in legalActions:
+            sa = (state, curAction)
+            if maxAction <= self.getQValue(state, curAction):
+                maxAction = self.getQValue(state, curAction)
+        
+        print "getValue end - MaxAction = ", maxAction    
+        return maxAction
     
   def getPolicy(self, state):
     """
@@ -66,7 +91,17 @@ class QLearningAgent(ReinforcementAgent):
       you should return None.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    print"getPolicy"
+    legalActions = self.getLegalActions(state)
+    bestAction = None
+    maxQvalue = -sys.maxint -1
+    
+    for a in legalActions:
+        
+        if maxQvalue <=  self.getQValue(state, a):
+            maxQvalue = self.getQValue(state, a)
+            bestAction = a
+    return bestAction
     
   def getAction(self, state):
     """
@@ -83,21 +118,61 @@ class QLearningAgent(ReinforcementAgent):
     legalActions = self.getLegalActions(state)
     action = None
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-    
-    return action
-  
-  def update(self, state, action, nextState, reward):
+    if len(legalActions) < 1: 
+        return None
+    else:
+        randomAction = util.flipCoin(self.epsilon) #epsilon = prob of true; 1-epsilon = prob false
+        if randomAction: 
+            action = random.choice(legalActions)
+        else:
+            action = self.getPolicy(state)
+            print "action", action
+        return action
+    #util.raiseNotDefined()
+  def update(self, prevState, prevAction, nextState, rPrime):
     """
       The parent class calls this to observe a 
-      state = action => nextState and reward transition.
+      prevState = prevAction => nextState and rPrime transition.
       You should do your Q-Value update here
       
       NOTE: You should never call this function,
       it will be called on your behalf
+      prevState = s; 
+      prevAction = a
+      nextState = s'
+      rPrime = r'
+      qValues = q
+      Nsa = freq
+      r = self.re
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    print "from update prevState: ", prevState, "prevAction: ", prevAction, "next prevAction: ",nextState," rPrime", rPrime 
+
+    #nextStateActions=self.getLegalActions(nextState)
+    stateActions=self.getLegalActions(prevState)
+    sa=(prevState,prevAction)
+    #sa=(prevState,self.ac)
+    
+    if stateActions[0] == "exit":
+        print "next state: ", nextState
+        self.qValues[sa] = rPrime
+    
+    #if prevState is not None:
+    else:
+
+        #self.freq[sa]=self.freq[sa]+1
+        #self.qValues[sa]=self.qValues[sa]+self.alpha*(self.freq[sa])*(rPrime+self.gamma*self.getValue(prevState) - self.qValues[sa])
+        
+        self.freq[sa]=self.freq[sa]+1
+        self.totalCount += 1
+        frequency = self.freq[sa]/self.totalCount
+        #self.qValues[sa]=self.qValues[sa]+self.alpha*(self.freq[sa])*(self.re+self.gamma*self.getValue(nextState) - self.qValues[sa])
+        self.qValues[sa]=self.qValues[sa]+self.alpha*(frequency)*(self.re+self.gamma*self.getValue(nextState) - self.qValues[sa])
+    
+    self.re = rPrime
+    #prevAction = self.getAction(nextState)
+    self.ac = self.getPolicy(nextState)
+    return self.ac
     
 class PacmanQAgent(QLearningAgent):
   "Exactly the same as QLearningAgent, but with different default parameters"
